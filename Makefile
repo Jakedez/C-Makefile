@@ -5,7 +5,6 @@ DIRS = src inc obj obj/debug bin bin/debug lib lib/obj lib/include
 CC = gcc
 AS = as
 CFLAGS = -Iinc -Ilib/include -Wall -std=c11
-LDFLAGS = -Llib/obj $(shell cat link.txt 2>/dev/null)
 LIBS = $(wildcard lib/obj/*.o) $(wildcard lib/obj/*.a)
 
 # Files
@@ -15,10 +14,12 @@ SRC_S = $(wildcard src/*.s)
 # Release Build
 OBJ = $(patsubst src/%, obj/%, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
 BIN = bin/main.exe
+LDFLAGS_RELEASE = -Llib/obj $(shell cat link_release.txt 2>/dev/null)
 
 # Debug Build
 OBJ_DEBUG = $(patsubst src/%, obj/debug/%, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
 BIN_DEBUG = bin/debug/main_debug.exe
+LDFLAGS_DEBUG = -Llib/obj $(shell cat link_debug.txt 2>/dev/null)
 
 # Targets
 .PHONY: generate remove remove_code build debug run run_debug clean generate_code help
@@ -48,12 +49,12 @@ help:
 generate:
 	@echo Creating project directory structure...
 	@mkdir -p $(DIRS)
-	@touch link.txt
+	@touch link_release.txt link_debug.txt
 	@echo Done!
 
 remove:
 	@echo Removing project directory structure...
-	@rm -rf $(DIRS) link.txt
+	@rm -rf $(DIRS) link_release.txt link_debug.txt
 	@echo Done!
 
 remove_code:
@@ -67,7 +68,7 @@ build: $(BIN)
 
 obj/%.o: src/%.c | obj
 	@echo "Compiling $< (release mode)..."
-	@$(CC) $(CFLAGS) -O2 -c $< -o $@
+	@$(CC) $(CFLAGS) -O2 -c $< -o $@ 
 
 obj/%.o: src/%.s | obj
 	@echo "Assembling $< (release mode)..."
@@ -75,7 +76,7 @@ obj/%.o: src/%.s | obj
 
 $(BIN): $(OBJ) $(LIBS) | bin
 	@echo "Linking $@..."
-	@$(CC) -o $@ $^ $(LDFLAGS)
+	@$(CC) -o $@ $^ $(LDFLAGS_RELEASE)
 
 # Debug Build
 debug: $(BIN_DEBUG)
@@ -83,7 +84,7 @@ debug: $(BIN_DEBUG)
 
 obj/debug/%.o: src/%.c | obj/debug
 	@echo "Compiling $< (debug mode)..."
-	@$(CC) $(CFLAGS) -O1 -g -c $< -o $@
+	@$(CC) $(CFLAGS) -O1 -g -c $< -o $@ 
 
 obj/debug/%.o: src/%.s | obj/debug
 	@echo "Assembling $< (debug mode)..."
@@ -91,7 +92,7 @@ obj/debug/%.o: src/%.s | obj/debug
 
 $(BIN_DEBUG): $(OBJ_DEBUG) $(LIBS) | bin/debug
 	@echo "Linking $@..."
-	@$(CC) -g -o $@ $^ $(LDFLAGS)
+	@$(CC) -g -o $@ $^ $(LDFLAGS_DEBUG)
 
 # Run the executable
 run: $(BIN)
