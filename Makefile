@@ -155,3 +155,4 @@ generate_code:
 	@echo '}' >> .vscode/tasks.json
 
 	@echo VS Code setup complete!
+	
