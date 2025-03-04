@@ -1,5 +1,5 @@
 # Directories
-DIRS = src inc obj obj/debug bin bin/debug lib lib/obj lib/include .vscode
+DIRS = src inc obj obj/debug bin bin/debug lib lib/obj lib/include
 
 # Compiler and flags
 CC = gcc
@@ -21,7 +21,7 @@ OBJ_DEBUG = $(patsubst src/%, obj/debug/%, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
 BIN_DEBUG = bin/debug/main_debug.exe
 
 # Targets
-.PHONY: generate remove build debug run clean generate_code help
+.PHONY: generate remove remove_code build debug run clean generate_code help
 
 # Help target
 help:
@@ -33,6 +33,7 @@ help:
 	@echo "Targets:"
 	@echo "  generate      Create project directory structure and link.txt file"
 	@echo "  remove        Remove the project directory structure and link.txt file"
+	@echo "  remove_code   Remove VS Code configuration"
 	@echo "  build         Build the release version of the program (optimized)"
 	@echo "  debug         Build the debug version of the program (with debugging info)"
 	@echo "  run           Run the release version of the program"
@@ -52,6 +53,11 @@ generate:
 remove:
 	@echo Removing project directory structure...
 	@rm -rf $(DIRS) link.txt
+	@echo Done!
+
+remove_code:
+	@echo Removing VS Code configuration...
+	@rm -rf .vscode
 	@echo Done!
 
 # Release Build
