@@ -21,7 +21,7 @@ OBJ_DEBUG = $(patsubst src/%, obj/debug/%, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
 BIN_DEBUG = bin/debug/main_debug.exe
 
 # Targets
-.PHONY: generate remove remove_code build debug run clean generate_code help
+.PHONY: generate remove remove_code build debug run run_debug clean generate_code help
 
 # Help target
 help:
@@ -37,6 +37,7 @@ help:
 	@echo "  build         Build the release version of the program (optimized)"
 	@echo "  debug         Build the debug version of the program (with debugging info)"
 	@echo "  run           Run the release version of the program"
+	@echo "  run_debug     Run the debug version of the program in gdb"
 	@echo "  clean         Clean up build files (object files and executables)"
 	@echo "  generate_code Generate VS Code configuration files"
 	@echo ""
@@ -96,6 +97,11 @@ $(BIN_DEBUG): $(OBJ_DEBUG) $(LIBS) | bin/debug
 run: $(BIN)
 	@echo Running program...
 	@$(BIN)
+
+# Run the debug executable with gdb
+run_debug: $(BIN_DEBUG)
+	@echo Running program in debug mode...
+	@gdb $(BIN_DEBUG)
 
 # Clean up object files and executables
 clean:
@@ -161,4 +167,3 @@ generate_code:
 	@echo '}' >> .vscode/tasks.json
 
 	@echo VS Code setup complete!
-	
